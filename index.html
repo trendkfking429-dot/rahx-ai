@@ -1,1 +1,211 @@
 
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RAHX AI - Chat & Photo Tools</title>
+
+<style>
+*{box-sizing:border-box}
+body{
+ margin:0;
+ font-family:Arial,sans-serif;
+ background:#0b1020;
+ color:white;
+}
+header{
+ padding:20px;
+ background:#151d33;
+ display:flex;
+ justify-content:space-between;
+ align-items:center;
+ border-bottom:1px solid #29344e;
+}
+.logo{font-size:25px;font-weight:bold;color:#55e6a5}
+.container{max-width:850px;margin:auto;padding:20px}
+h1{text-align:center;font-size:34px}
+.subtitle{text-align:center;color:#aab5ca}
+.tabs{display:flex;gap:10px;margin:25px 0}
+button{
+ border:0;
+ border-radius:10px;
+ padding:13px 18px;
+ cursor:pointer;
+ font-size:15px;
+ background:#263552;
+ color:white;
+}
+button.active,.primary{
+ background:#12b981;
+ color:#061b14;
+ font-weight:bold;
+}
+.panel{
+ background:#151d33;
+ padding:20px;
+ border-radius:16px;
+ margin-bottom:20px;
+ border:1px solid #29344e;
+}
+textarea,input{
+ width:100%;
+ padding:14px;
+ border-radius:10px;
+ border:1px solid #394965;
+ background:#0b1020;
+ color:white;
+ margin:10px 0;
+ font-size:15px;
+}
+textarea{min-height:100px;resize:vertical}
+.chatbox{
+ height:280px;
+ overflow-y:auto;
+ background:#0b1020;
+ border-radius:10px;
+ padding:12px;
+ margin:15px 0;
+}
+.message{
+ padding:12px;
+ border-radius:10px;
+ margin:10px 0;
+ max-width:90%;
+ line-height:1.5;
+}
+.user{background:#175c49;margin-left:auto}
+.bot{background:#263552}
+#preview{
+ max-width:100%;
+ max-height:350px;
+ display:none;
+ margin:15px auto;
+ border-radius:12px;
+}
+.actions{display:flex;flex-wrap:wrap;gap:10px}
+footer{text-align:center;padding:25px;color:#8995aa}
+.small{color:#9ba9bf;font-size:13px}
+</style>
+</head>
+
+<body>
+
+<header>
+ <div class="logo">RAHX AI</div>
+ <div>✨ Smart Tools</div>
+</header>
+
+<div class="container">
+
+<h1>Welcome to RAHX AI</h1>
+<p class="subtitle">Your Personal AI Chat and Photo Tools</p>
+
+<div class="tabs">
+ <button class="active" onclick="showTab('chat',this)">AI Chat</button>
+ <button onclick="showTab('photo',this)">Photo Tools</button>
+</div>
+
+<section id="chat" class="panel">
+ <h2>💬 RAHX AI Chat</h2>
+ <div class="chatbox" id="chatbox">
+  <div class="message bot">Hello! Welcome to RAHX AI. How can I help you today?</div>
+ </div>
+ <textarea id="question" placeholder="Ask me anything..."></textarea>
+ <button class="primary" onclick="sendMessage()">Send Message ➤</button>
+ <p class="small">Demo chat interface. Connect an AI API through a secure backend to enable real AI answers.</p>
+</section>
+
+<section id="photo" class="panel" style="display:none">
+ <h2>📸 AI Photo Tools</h2>
+ <p>Select a photo from your device.</p>
+ <input type="file" id="photoInput" accept="image/*">
+ <img id="preview" alt="Photo preview">
+ <div class="actions">
+  <button onclick="applyFilter('none')">Original</button>
+  <button onclick="applyFilter('grayscale(1)')">Black & White</button>
+  <button onclick="applyFilter('brightness(1.2)')">Bright</button>
+  <button onclick="applyFilter('contrast(1.3)')">Contrast</button>
+  <button class="primary" onclick="downloadPhoto()">Download Photo</button>
+ </div>
+ <p class="small">Photo preview and basic filters work in your browser. AI editing requires an image-generation API.</p>
+</section>
+
+</div>
+
+<footer>
+ © 2026 RAHX AI. All Rights Reserved.
+</footer>
+
+<script>
+function showTab(id,btn){
+ document.getElementById('chat').style.display='none';
+ document.getElementById('photo').style.display='none';
+ document.getElementById(id).style.display='block';
+ document.querySelectorAll('.tabs button').forEach(b=>b.classList.remove('active'));
+ btn.classList.add('active');
+}
+
+function sendMessage(){
+ const input=document.getElementById('question');
+ const box=document.getElementById('chatbox');
+ const value=input.value.trim();
+ if(!value)return;
+
+ const user=document.createElement('div');
+ user.className='message user';
+ user.textContent=value;
+ box.appendChild(user);
+
+ const bot=document.createElement('div');
+ bot.className='message bot';
+ bot.textContent='Thanks for trying RAHX AI! This is currently a demo. Connect an AI API to receive intelligent answers.';
+ box.appendChild(bot);
+
+ input.value='';
+ box.scrollTop=box.scrollHeight;
+}
+
+document.getElementById('photoInput').addEventListener('change',function(e){
+ const file=e.target.files[0];
+ if(!file)return;
+ if(!file.type.startsWith('image/')){
+  alert('Please select an image file.');
+  return;
+ }
+ const preview=document.getElementById('preview');
+ preview.src=URL.createObjectURL(file);
+ preview.style.display='block';
+ preview.style.filter='none';
+});
+
+function applyFilter(filter){
+ const preview=document.getElementById('preview');
+ if(preview.src)preview.style.filter=filter;
+}
+
+function downloadPhoto(){
+ const preview=document.getElementById('preview');
+ if(!preview.src){
+  alert('Please select a photo first.');
+  return;
+ }
+
+ const canvas=document.createElement('canvas');
+ const ctx=canvas.getContext('2d');
+ canvas.width=preview.naturalWidth;
+ canvas.height=preview.naturalHeight;
+
+ ctx.filter=preview.style.filter||'none';
+ ctx.drawImage(preview,0,0,canvas.width,canvas.height);
+
+ const link=document.createElement('a');
+ link.download='RAHX-AI-Photo.png';
+ link.href=canvas.toDataURL('image/png');
+ link.click();
+}
+</script>
+
+</body>
+</html>
